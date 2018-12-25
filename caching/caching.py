@@ -298,6 +298,12 @@ class HashDictCache:
             result = self.cache[digest]
             self.hits += 1
         except KeyError:
-            result = self.cache[digest] = function()
+            # Evaluating the function in the except clause leads to confusing error message when the function
+            # throws an exception.
+            result = None
             self.misses += 1
+
+        if result is None:
+            result = self.cache[digest] = function()
+
         return result
