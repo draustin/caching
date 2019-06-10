@@ -260,22 +260,15 @@ def cached_method(inplace):
 
     return decorator
 
-
-# to be deleted
-# class PathCachedEvaluator:
-#     def __init__(self,path,mode):
-#         self.path=path
-#         self.mode=mode
-#
-#     def __call__(self,function,args,kwargs):
-#         return eval_with_cache(self.path,function,args,kwargs,self.mode)
-
-class NullCache:
+class Cache:
+    def lookup(self, key, function):
+        raise NotImplementedError()
+    
+class NullCache(Cache):
     def lookup(self, key, function):
         return function()
-
-
-class HashFileCache:
+    
+class HashFileCache(Cache):
     def __init__(self, folder, mode='normal'):
         self.folder = folder
         self.mode = mode
@@ -286,7 +279,7 @@ class HashFileCache:
         return eval_with_cache(path, function, mode=self.mode)
 
 
-class HashDictCache:
+class HashDictCache(Cache):
     def __init__(self):
         self.cache = {}
         self.hits = 0
